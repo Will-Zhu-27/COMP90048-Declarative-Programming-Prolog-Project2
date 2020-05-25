@@ -1,12 +1,21 @@
 % load clpfd library
 :- ensure_loaded(library(clpfd)).
 
-% puzzle_solution(Puzzle, WorldList) :-
-%     get_puzzle_slots(Puzzle, Slots),
+puzzle_solution(Puzzle, WordList) :-
+    get_puzzle_slots(Puzzle, Slots),
+    fill_slots(Slots, [], WordList).
 
+fill_slots([], _, []).
+fill_slots([Slot|Slots], UsedWordList, WordList) :-
+    length(Slot, N),
+    include(filter_word(N), WordList, FilteredList),
+    member(Slot, FilteredList),
+    append(UsedWordList, Slot, UsedWordList1),
+    select(Slot, WordList, WordList1),
+    fill_slots(Slots, UsedWordList1, WordList1).
 
-
-
+filter_word(N, Word) :-
+    length(Word, N).
 
 
 get_puzzle_slots(Puzzle, AllSlots) :-
@@ -29,21 +38,18 @@ get_slots(Row, Slots) :-
 
 get_slots([], Slots0, Slots) :-
     delete(Slots0, [], Slots).
-
+    
 get_slots([A|Rs], Slots0, Slots) :-
-    (   var(A)
-    ->  length(Slots0, N),
-        nth1(N, Slots0, LastSlot, RestSlots),
-        append(LastSlot, [A], NewSlot),
-        append(RestSlots, [NewSlot], Slots1),
-        get_slots(Rs, Slots1, Slots)
-    ;   A == '#'
+    (   A == '#'
     ->  last(Slots0, LastSlot),
         (   LastSlot == []
         ->  get_slots(Rs, Slots0, Slots)
         ;   append(Slots0, [[]], Slots1),
             get_slots(Rs, Slots1, Slots)
         )
+    ;   length(Slots0, N),
+        nth1(N, Slots0, LastSlot, RestSlots),
+        append(LastSlot, [A], NewSlot),
+        append(RestSlots, [NewSlot], Slots1),
+        get_slots(Rs, Slots1, Slots)
     ).
-    
-    
