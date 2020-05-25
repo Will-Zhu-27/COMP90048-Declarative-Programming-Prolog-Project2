@@ -1,13 +1,20 @@
 % load clpfd library
 :- ensure_loaded(library(clpfd)).
 
-get_puzzle_slots(Puzzle, WorldList) :-
-    % maplist(same_length(Puzzle), Puzzle),
+% puzzle_solution(Puzzle, WorldList) :-
+%     get_puzzle_slots(Puzzle, Slots),
+
+
+
+
+
+
+get_puzzle_slots(Puzzle, AllSlots) :-
     Rows = Puzzle,
     get_all_slots(Rows, AllRowsSlots),
     transpose(Puzzle, Cols),
     get_all_slots(Cols, AllColsSlots),
-    append(AllRowsSlots, AllColsSlots, WorldList).
+    append(AllRowsSlots, AllColsSlots, AllSlots).
 
 
 get_all_slots([], []).
@@ -23,19 +30,20 @@ get_slots(Row, Slots) :-
 get_slots([], Slots0, Slots) :-
     delete(Slots0, [], Slots).
 
-get_slots(['#'|Rs], Slots0, Slots) :-
-    last(Slots0, LastSlot), 
-    (   LastSlot == []
-    ->  get_slots(Rs, Slots0, Slots)
-    ;   append(Slots0, [[]], Slots1),
-        get_slots(Rs, Slots1, Slots)
-    ).
-
-
 get_slots([A|Rs], Slots0, Slots) :-
-    A \== '#',
-    length(Slots0, N),
-    nth1(N, Slots0, LastSlot, RestSlots),
-    append(LastSlot, [A], NewSlot),
-    append(RestSlots, [NewSlot], Slots1),
-    get_slots(Rs, Slots1, Slots).
+    (   var(A)
+    ->  length(Slots0, N),
+        nth1(N, Slots0, LastSlot, RestSlots),
+        append(LastSlot, [A], NewSlot),
+        append(RestSlots, [NewSlot], Slots1),
+        get_slots(Rs, Slots1, Slots)
+    ;   A == '#'
+    ->  last(Slots0, LastSlot),
+        (   LastSlot == []
+        ->  get_slots(Rs, Slots0, Slots)
+        ;   append(Slots0, [[]], Slots1),
+            get_slots(Rs, Slots1, Slots)
+        )
+    ).
+    
+    
