@@ -13,15 +13,6 @@ fill_slots(Slots, [Word|Words]) :-
     select(Word, Slots, LastSlots),
     fill_slots(LastSlots, Words).
 
-
-% fill_slots([Slot|Slots], UsedWordList, WordList) :-
-%     length(Slot, N),
-%     include(filter_word(N), WordList, FilteredList),
-%     member(Slot, FilteredList),
-%     append(UsedWordList, Slot, UsedWordList1),
-%     select(Slot, WordList, WordList1),
-%     fill_slots(Slots, UsedWordList1, WordList1).
-
 filter_slot(N, Word) :-
     length(Word, N).
 
@@ -45,7 +36,9 @@ get_slots(Row, Slots) :-
     get_slots(Row, [[]], Slots).
 
 get_slots([], Slots0, Slots) :-
-    delete(Slots0, [], Slots).
+    % 去掉1和0个的slot
+    delete(Slots0, [], Slots1),
+    exclude(filter_slot(1), Slots1, Slots).
     
 get_slots([A|Rs], Slots0, Slots) :-
     (   A == '#'
