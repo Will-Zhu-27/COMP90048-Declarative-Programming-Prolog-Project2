@@ -3,18 +3,26 @@
 
 puzzle_solution(Puzzle, WordList) :-
     get_puzzle_slots(Puzzle, Slots),
-    fill_slots(Slots, [], WordList).
+    fill_slots(Slots, WordList).
 
-fill_slots([], _, []).
-fill_slots([Slot|Slots], UsedWordList, WordList) :-
-    length(Slot, N),
-    include(filter_word(N), WordList, FilteredList),
-    member(Slot, FilteredList),
-    append(UsedWordList, Slot, UsedWordList1),
-    select(Slot, WordList, WordList1),
-    fill_slots(Slots, UsedWordList1, WordList1).
+fill_slots(_, []).
+fill_slots(Slots, [Word|Words]) :-
+    length(Word, N),
+    include(filter_slot(N), Slots, FilteredSlots),
+    member(Word, FilteredSlots),
+    select(Word, Slots, LastSlots),
+    fill_slots(LastSlots, Words).
 
-filter_word(N, Word) :-
+
+% fill_slots([Slot|Slots], UsedWordList, WordList) :-
+%     length(Slot, N),
+%     include(filter_word(N), WordList, FilteredList),
+%     member(Slot, FilteredList),
+%     append(UsedWordList, Slot, UsedWordList1),
+%     select(Slot, WordList, WordList1),
+%     fill_slots(Slots, UsedWordList1, WordList1).
+
+filter_slot(N, Word) :-
     length(Word, N).
 
 
