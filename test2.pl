@@ -28,5 +28,10 @@ Puzzle = [['#','#', _, _, _,'#','#'],
             ['g', _,'#', _, _, _, _],
             ['#', _, _, _, _,'#','#'],
             ['#','#', _, _, _,'#','#']],
-WordList = [[g, i], [i, o], [e,v,o], [r,e,f],[c,l,o,d],[d,a,i,s], [d,e,n,s],[d,o,l,e],[a,r,t,i,c,l,e]],
+WordList = [[g, i], [i, o], [o, n], [o, r], [d,a,g], [e,v,o], [o,e,d],[r,e,f],[a,r,i,d],[c,l,e,f],[c,l,o,d],[d,a,i,s], [d,e,n,s],[d,o,l,e], [e,d,i,t],[s,i,l,o], [a,r,t,i,c,l,e], [v,e,s,i,c,l,e]],
 puzzle_solution(Puzzle, WordList).
+
+
+Slots = [[_, a, _, _], [k, _]], WordList = [[b, a, g, e], [a,c], [c,a,g,e], [k, g]],get_all_pairs(WordList, Slots, Pairs).
+
+Pairs = [1-[[_,a], [[k, a]]], 2-[[b, a, _], [[b, j, k], [b, a, a]]]], update_pairs(Pairs, UpdatedPairs), write(UpdatedPairs).

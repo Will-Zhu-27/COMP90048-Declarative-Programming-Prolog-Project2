@@ -1,17 +1,52 @@
-% load clpfd library
+% load library
 :- ensure_loaded(library(clpfd)).
+:- ensure_loaded(library(pairs)).
 
 puzzle_solution(Puzzle, WordList) :-
     get_puzzle_slots(Puzzle, Slots),
-    fill_slots(Slots, WordList).
+    get_all_pairs(WordList, Slots, Pairs),
+    sort(Pairs, SortedPairs),
+    fill_slots(SortedPairs, WordList).
 
-fill_slots(_, []).
-fill_slots(Slots, [Word|Words]) :-
-    length(Word, N),
-    include(filter_slot(N), Slots, FilteredSlots),
-    member(Word, FilteredSlots),
-    select(Word, Slots, LastSlots),
-    fill_slots(LastSlots, Words).
+fill_slots([], []).
+fill_slots([(_-[Slot, Options])|Pairs], WordList) :-
+    member(Slot, Options),
+    update_pairs(Pairs, UpdatedPairs, Slot),
+    sort(UpdatedPairs, SortedPairs),
+    select(Slot, WordList, RestWordList),
+    fill_slots(SortedPairs, RestWordList).
+
+update_pairs(Pairs, UpdatedPairs, RemoveWord) :-
+    update_pairs(Pairs, [], UpdatedPairs, RemoveWord).
+
+update_pairs([], UpdatedPairs, UpdatedPairs, _).
+update_pairs([(_-[Slot, Options])|Pairs], UpdatedPairs0, UpdatedPairs, RemoveWord) :-
+    delete(Options, RemoveWord, RestOptions),
+    get_pair(RestOptions, Slot, Pair),
+    append(UpdatedPairs0, Pair, UpdatedPairs1),
+    update_pairs(Pairs, UpdatedPairs1, UpdatedPairs, RemoveWord).
+
+get_all_pairs(WordList, Slots, Pairs) :-
+    get_all_pairs(WordList, Slots, [], Pairs).
+
+get_all_pairs(_, [], Pairs, Pairs).
+get_all_pairs(WordList, [Slot|Slots], Pairs0, Pairs) :-
+    get_pair(WordList, Slot, Pair),
+    append(Pairs0, Pair, Pairs1),
+    get_all_pairs(WordList, Slots, Pairs1, Pairs).
+
+get_pair(WordList, Slot, Pair):-
+    filter_words(WordList, Slot, [], FilteredWords),
+    length(FilteredWords, N),
+    Pair = [N-[Slot, FilteredWords]].
+
+filter_words([], _, Result, Result).
+filter_words([Word|Words], Slot, Result0, Result) :-
+    (   Slot \= Word   
+    ->  filter_words(Words, Slot, Result0, Result)
+    ;  append(Result0, [Word], Result1),
+        filter_words(Words, Slot, Result1, Result)
+    ).
 
 filter_slot(N, Word) :-
     length(Word, N).
